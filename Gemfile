@@ -2,10 +2,7 @@
 
 source "https://rubygems.org"
 
-gemspec
+gem 'jekyll', '~> 4.2.0'
+gem 'jekyll-theme-chirpy'
+gem 'bundler', '~> 2.4.22'
 
-group :test do
-  gem "html-proofer", "~> 5.0"
-  gem 'bundler', '~> 2.4.22'
-
-end
