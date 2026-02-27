@@ -1,17 +1,17 @@
 ﻿---
-title: React Async Handling Study Guide
+title: 리액트 비동기 처리 학습 가이드
 date: 2026-02-27 22:00:00 +09:00
 tags: [react, javascript, async, frontend]
-description: A practical study note on async handling in React, including loading and error states, request cancellation, race condition prevention, and a reusable custom hook.
+description: 로딩/에러 상태 관리, 요청 취소, 경쟁 상태 방지, 커스텀 훅 재사용까지 리액트 비동기 처리를 실전 중심으로 정리한 학습 노트.
 ---
 
-React apps are full of async work: API requests, lazy loading, user-triggered updates, and background refreshes.
-This post is a practical study note focused on patterns you can apply immediately.
+리액트 앱에서는 비동기 작업이 기본입니다. API 요청, 지연 로딩, 사용자 액션 기반 업데이트, 백그라운드 새로고침까지 모두 비동기 흐름을 가집니다.
+이 글은 실무와 학습에 바로 적용할 수 있는 패턴만 간결하게 정리한 스터디 노트입니다.
 
-## 1. Baseline: loading, error, data
+## 1. 기본기: loading, error, data 세 가지 상태
 
-The most common beginner mistake is handling only the successful case.
-Always model async UI as at least three states:
+초보 단계에서 가장 흔한 실수는 성공 케이스만 처리하는 것입니다.
+비동기 UI는 최소 다음 세 상태로 모델링해야 합니다.
 
 - loading
 - error
@@ -55,15 +55,15 @@ export default function UserList() {
 }
 ```
 
-What this solves:
+이 패턴으로 얻는 이점:
 
-- predictable render branches
-- no state update after unmount
+- 렌더 분기가 예측 가능해진다
+- 언마운트 이후 상태 업데이트를 막을 수 있다
 
-## 2. Cancel requests with AbortController
+## 2. AbortController로 요청 취소하기
 
-Using a `mounted` flag prevents a state update, but the request still runs.
-For real cancellation, use `AbortController`.
+`mounted` 플래그는 상태 업데이트만 막고 요청 자체는 계속 실행됩니다.
+실제 네트워크 요청을 취소하려면 `AbortController`를 사용하세요.
 
 ```jsx
 useEffect(() => {
@@ -86,15 +86,15 @@ useEffect(() => {
 }, []);
 ```
 
-Why this matters:
+이게 중요한 이유:
 
-- avoids unnecessary network and memory work
-- prevents stale responses from updating state after navigation
+- 불필요한 네트워크와 메모리 사용을 줄인다
+- 페이지 이동 후 늦게 도착한 응답이 상태를 덮어쓰는 문제를 줄인다
 
-## 3. Race conditions: latest request wins
+## 3. 경쟁 상태: 최신 요청만 반영하기
 
-When query input changes quickly, responses may arrive out of order.
-Without protection, old data can overwrite new data.
+검색어처럼 입력이 빠르게 바뀌는 경우, 응답 도착 순서가 요청 순서와 달라질 수 있습니다.
+보호 로직이 없으면 오래된 응답이 최신 데이터를 덮어쓸 수 있습니다.
 
 ```jsx
 import { useEffect, useRef, useState } from "react";
@@ -124,7 +124,7 @@ function SearchUsers({ keyword }) {
         if (!res.ok) throw new Error("Search failed");
         const json = await res.json();
 
-        // Ignore stale result.
+        // 오래된 응답은 무시한다.
         if (currentRequestId === requestIdRef.current) {
           setUsers(json);
         }
@@ -147,9 +147,9 @@ function SearchUsers({ keyword }) {
 }
 ```
 
-## 4. Parallel requests
+## 4. 병렬 요청 처리
 
-When data sources are independent, run them in parallel with `Promise.all`.
+서로 독립적인 데이터 소스라면 `Promise.all`로 병렬 실행하세요.
 
 ```jsx
 useEffect(() => {
@@ -179,14 +179,14 @@ useEffect(() => {
 }, []);
 ```
 
-Rule of thumb:
+실전 기준:
 
-- use sequential `await` only when later request depends on earlier result
-- otherwise use parallel flow to reduce total waiting time
+- 뒤 요청이 앞 요청 결과에 의존하면 순차 `await`
+- 서로 독립이면 병렬 처리로 전체 대기 시간을 줄인다
 
-## 5. Reusable async hook
+## 5. 재사용 가능한 async 훅 만들기
 
-As the same pattern repeats, extract it into a custom hook.
+같은 패턴이 반복되면 커스텀 훅으로 추출해 재사용하세요.
 
 ```jsx
 import { useCallback, useState } from "react";
@@ -215,7 +215,7 @@ export function useAsync(asyncFn) {
 }
 ```
 
-Usage:
+사용 예시:
 
 ```jsx
 const { loading, error, data: user, run: loadUser } = useAsync(async (id) => {
@@ -229,22 +229,22 @@ useEffect(() => {
 }, [loadUser, userId]);
 ```
 
-## 6. When to use React Query or SWR
+## 6. React Query 또는 SWR를 써야 하는 시점
 
-If your app needs caching, stale-while-revalidate, retries, and query invalidation at scale,
-use a server-state library instead of hand-rolling everything.
+캐싱, stale-while-revalidate, 재시도, 쿼리 무효화가 본격적으로 필요해지면
+직접 모든 로직을 구현하기보다 서버 상태 라이브러리를 도입하는 편이 효율적입니다.
 
-- light and simple screen: native `useEffect` + local state can be enough
-- medium to large app: React Query or SWR usually pays off quickly
+- 단순한 화면: `useEffect` + 로컬 상태만으로 충분할 수 있다
+- 중대형 앱: React Query/SWR 도입 효과가 빠르게 나타난다
 
-## 7. Practical checklist
+## 7. 실전 체크리스트
 
-Before you ship an async feature in React, verify:
+리액트 비동기 기능을 배포하기 전, 아래 항목을 확인하세요.
 
-- loading, error, and success are all rendered
-- requests are canceled on unmount or dependency change
-- stale responses cannot overwrite latest state
-- independent requests are parallelized
-- duplicated logic is extracted into a hook or a data library
+- loading, error, success 상태가 모두 렌더링된다
+- 언마운트/의존성 변경 시 요청이 취소된다
+- 오래된 응답이 최신 상태를 덮어쓰지 못한다
+- 독립 요청은 병렬 처리한다
+- 반복 로직은 커스텀 훅 또는 데이터 라이브러리로 추출한다
 
-If this checklist is green, your async UI is usually in a solid state.
+이 체크리스트가 통과되면 비동기 UI 품질이 크게 안정됩니다.
