@@ -1,0 +1,32 @@
+---
+title: Categories
+permalink: /categories/
+layout: page
+excerpt: Sorted article by categories.
+comments: false
+---
+
+{% assign grouped_posts = site.posts | group_by_exp: "post", "post.path | split: '/' | slice: 1, 1 | first | default: 'uncategorized'" %}
+{% assign sorted_categories = grouped_posts | sort_natural: "name" %}
+
+<div class="archive-tags">
+  <a class="tag-item" href="#">all</a>
+  {%- for category in sorted_categories -%}
+    {%- assign name = category.name -%}
+    <a class="tag-item" href="#{{ name | downcase | slugify }}">{{ name | replace: '-', ' ' }}</a>
+  {%- endfor -%}
+</div>
+
+{%- for category in sorted_categories -%}
+  {%- assign name = category.name -%}
+  {%- assign posts = category.items -%}
+  <h2 id="{{ name | downcase | slugify }}">{{ name | replace: '-', ' ' | upcase }}</h2>
+  {%- for post in posts -%}
+    <article class="post-item" id="results-container">
+      <span class="post-item-date">{{ post.date | date: "%b %d, %Y" }}</span>
+      <h3 class="post-item-title">
+        <a href="{{ post.url }}">{{ post.title | escape }}</a>
+      </h3>
+    </article>
+  {%- endfor -%}
+{%- endfor -%}

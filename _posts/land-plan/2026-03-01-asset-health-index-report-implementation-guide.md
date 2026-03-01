@@ -1,8 +1,8 @@
 ---
-title: Asset Health Index 리포트 구현 가이드 (Grandview Reportlet)
+title: "Asset Health Index 리포트 구현 가이드 (Grandview Reportlet)"
 date: 2026-03-01 12:30:00 +09:00
 tags: [frontend, grandview, reportlet, report, asset-health-index]
-description: @grandview 기반에서 Asset Health Index 리포트를 설계, 구현, 연동, 테스트, 배포까지 완료하는 실전 기술 문서.
+description: "@grandview 기반에서 Asset Health Index 리포트를 설계, 구현, 연동, 테스트, 배포까지 완료하는 실전 기술 문서."
 ---
 
 # Asset Health Index 리포트 구현 가이드 (Grandview Reportlet)
