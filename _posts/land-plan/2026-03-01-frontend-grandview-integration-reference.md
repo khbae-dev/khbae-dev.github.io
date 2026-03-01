@@ -3,6 +3,7 @@ title: Frontend 전체 소스 + @grandview 통합 기술 문서
 date: 2026-03-01 10:00:00 +09:00
 tags: [frontend, architecture, module-federation, grandview, reference]
 description: application-seed/frontend와 @grandview 패키지 통합 관점에서 설계, 구현, 테스트, 배포 기준을 정리한 실무 레퍼런스 문서.
+published: false
 ---
 
 # Frontend 전체 소스 + `@grandview` 통합 기술 문서
