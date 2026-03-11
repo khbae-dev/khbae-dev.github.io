@@ -1,6 +1,6 @@
 ---
 title: PostgreSQL 서로 다른 인스턴스 조회 결과를 같이 보는 방법
-date: 2026-03-11 20:30:00 +09:00
+date: 2026-03-11 14:30:00 +09:00
 tags: [postgresql, database, dblink, postgres-fdw, dbeaver]
 description: PostgreSQL에서 서로 다른 두 인스턴스의 조회 결과를 한 SQL처럼 같이 보고 싶을 때 dblink, postgres_fdw, DBeaver 비교, 외부 스크립트 병합 방식을 실무 기준으로 정리했다.
 ---
