@@ -10,13 +10,13 @@ description: PostgreSQL에서 text 컬럼에 저장된 `[{}]` 형태의 JSON 문
 예를 들면 아래처럼 저장돼 있습니다.
 
 ```text
-[{"measurement":"speed","value":10}]
+[{"measurement":"metric-a","value":10}]
 ```
 
 또는
 
 ```text
-[{"measurement":"OilSuppSHDPrs","value":0.43}]
+[{"measurement":"metric-b","value":0.43}]
 ```
 
 이럴 때 중요한 포인트는 하나입니다.
@@ -38,7 +38,7 @@ CREATE TABLE table_name (
 `col_data` 값은 이런 형태입니다.
 
 ```text
-[{"measurement":"temperature","value":23.4}]
+[{"measurement":"metric-a","value":23.4}]
 ```
 
 즉 구조는 아래와 같습니다.
@@ -74,13 +74,13 @@ FROM table_name;
 예를 들어 값이 아래와 같다면
 
 ```text
-[{"measurement":"speed","value":10}]
+[{"measurement":"metric-a","value":10}]
 ```
 
 결과는 아래처럼 나옵니다.
 
 ```text
-speed
+metric-a
 ```
 
 ## 3. `value`도 같이 꺼낼 수 있다
@@ -128,8 +128,8 @@ FROM table_name;
 
 ```text
 [
-  {"measurement":"speed","value":10},
-  {"measurement":"temperature","value":22}
+  {"measurement":"metric-a","value":10},
+  {"measurement":"metric-b","value":22}
 ]
 ```
 
@@ -146,8 +146,8 @@ jsonb_array_elements(col_data::jsonb) AS elem;
 결과는 아래처럼 나옵니다.
 
 ```text
-speed        10
-temperature  22
+metric-a     10
+metric-b     22
 ```
 
 즉 `[{}]` 구조를 "여러 행"처럼 다루고 싶을 때 가장 자주 쓰는 패턴이 `jsonb_array_elements`입니다.
@@ -159,7 +159,7 @@ temperature  22
 예를 들어 실제 데이터가 아래와 같다고 하겠습니다.
 
 ```text
-[{"measurement":"OilSuppSHDPrs","value":0.43}]
+[{"measurement":"metric-c","value":0.43}]
 ```
 
 그러면 특정 measurement의 값을 추출하는 쿼리는 아래처럼 작성할 수 있습니다.
@@ -169,9 +169,9 @@ SELECT
     (
         SELECT (elem ->> 'value')::numeric
         FROM jsonb_array_elements(col_data::jsonb) AS elem
-        WHERE elem ->> 'measurement' = 'OilSuppSHDPrs'
+        WHERE elem ->> 'measurement' = 'metric-c'
         LIMIT 1
-    ) AS oil_supp_shd_prs
+    ) AS metric_c_value
 FROM table_name;
 ```
 
@@ -184,7 +184,7 @@ FROM table_name;
 ```sql
 SELECT *
 FROM table_name
-WHERE col_data::jsonb -> 0 ->> 'measurement' = 'speed';
+WHERE col_data::jsonb -> 0 ->> 'measurement' = 'metric-a';
 ```
 
 이 방식은 구조가 단순할 때 빠르게 확인하기 좋습니다.
@@ -197,7 +197,7 @@ WHERE col_data::jsonb -> 0 ->> 'measurement' = 'speed';
 예를 들어 어떤 데이터는 아래처럼 들어옵니다.
 
 ```text
-[{"measure":"temperature","value":23.4}]
+[{"measure":"metric-a","value":23.4}]
 ```
 
 이럴 때는 `COALESCE`로 두 키를 함께 처리할 수 있습니다.

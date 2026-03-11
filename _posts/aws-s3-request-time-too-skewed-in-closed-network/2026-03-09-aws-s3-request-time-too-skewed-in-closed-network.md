@@ -84,7 +84,7 @@ date
 예를 들어 `chrony`를 쓴다면 내부 서버를 기준으로 이런 식의 구성이 가능합니다.
 
 ```conf
-server internal-time-server iburst
+server time-server.local iburst
 ```
 
 이 방식의 장점은 명확합니다.

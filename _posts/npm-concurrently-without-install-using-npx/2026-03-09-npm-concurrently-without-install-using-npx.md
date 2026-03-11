@@ -87,7 +87,7 @@ npm run dev
 ```json
 {
   "scripts": {
-    "localhost:all-plugins": "concurrently \"npm run port1\" \"npm run dashboard:plugin-localhost\""
+    "dev:all": "concurrently \"npm run web\" \"npm run api\""
   }
 }
 ```
@@ -97,7 +97,7 @@ npm run dev
 ```json
 {
   "scripts": {
-    "localhost:all-plugins": "npx concurrently \"npm run port1\" \"npm run dashboard:plugin-localhost\""
+    "dev:all": "npx concurrently \"npm run web\" \"npm run api\""
   }
 }
 ```
